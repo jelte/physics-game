@@ -28,7 +28,6 @@ public class Rectangle implements Drawable
     public void draw(Graphics2D g, Camera camera)
     {
         g.setColor(colour);
-
         Vector2D a = gameObject.getPosition().add(new Vector2D(-dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
         Vector2D b = gameObject.getPosition().add(new Vector2D(dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
         Vector2D c = gameObject.getPosition().add(new Vector2D(dimension.getWidth()/2, dimension.getHeight()/2).rotate(gameObject.getRotation()));

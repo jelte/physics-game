@@ -50,8 +50,8 @@ public class Vector2D implements Serializable
 
     public Vector2D rotate(double angle)
     {
-        double cos = Math.cos(angle);
-        double sin = Math.sin(angle);
+        double cos = Math.cos(Math.toRadians(angle));
+        double sin = Math.sin(Math.toRadians(angle));
         double nx = x * cos - y * sin;
         double ny = x * sin + y * cos;
         return new Vector2D(nx,ny);
@@ -69,7 +69,7 @@ public class Vector2D implements Serializable
     }
 
     public Vector2D rotate90degreesAnticlockwise() {
-        return new Vector2D(-y,x);
+        return rotate(90);
     }
 
     /*************
@@ -117,5 +117,9 @@ public class Vector2D implements Serializable
 
     public double Y() {
         return this.y;
+    }
+
+    public Vector2D scale(Vector2D mult) {
+        return new Vector2D(x * mult.Y(), y*mult.X());
     }
 }

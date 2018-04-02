@@ -8,6 +8,8 @@ import platformer.PhysicsEngine.Collider;
 import platformer.PhysicsEngine.Collision;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static platformer.Game.DEBUG;
 
@@ -16,23 +18,33 @@ public class LineCollider implements Collider
     private final GameObject gameObject;
     private Vector2D a, b;
     private double barrierLength;
-    private double accuracy = 0.1;
+    private double accuracy = 0.5;
+
 
     public LineCollider(GameObject gameObject, Vector2D a, Vector2D b)
     {
+        this(gameObject, a, b, false);
+    }
+    public LineCollider(GameObject gameObject, Vector2D a, Vector2D b, boolean invert)
+    {
         this.gameObject = gameObject;
-        this.a = a;
-        this.b = b;
-        barrierLength = b.minus(a).mag();
+        this.a = invert ? b : a;
+        this.b = invert ? a : b;
+        barrierLength = this.b.minus(this.a).mag();
     }
 
     @Override
     public Collision collide(Collider other) {
+
+        List<Vector2D> contactPoints = new ArrayList<>();
         if (other.collidesAt(getA())) {
-            return new Collision(this, other, getA());
+            contactPoints.add(getA());
         }
         if (other.collidesAt(getB())) {
-            return new Collision( this, other, getB());
+            contactPoints.add(getB());
+        }
+        if (contactPoints.size() > 0) {
+            return new Collision(this, other, contactPoints);
         }
         return null;
     }
@@ -45,7 +57,10 @@ public class LineCollider implements Collider
         double distAlongBarrier = ap.scalarProduct(getUnitTangent());
 
         // barrierLength is ||AB||, declared in constructor.
-        return distOnCorrectSideOfBarrierToCentre<=accuracy && distAlongBarrier >= 0 && distAlongBarrier <= barrierLength;
+        return distOnCorrectSideOfBarrierToCentre<=accuracy
+                && distOnCorrectSideOfBarrierToCentre>=-accuracy
+                && distAlongBarrier >= 0
+                && distAlongBarrier <= barrierLength;
     }
 
     @Override
@@ -60,8 +75,8 @@ public class LineCollider implements Collider
 
     public Vector2D getUnitTangent() { return getA().minus(getB()).normalise(); }
     public Vector2D getUnitNormal() { return getUnitTangent().rotate90degreesAnticlockwise(); }
-    private Vector2D getA() { return gameObject.getPosition().add(a.rotate(gameObject.getRotation())); }
-    private Vector2D getB() { return gameObject.getPosition().add(b.rotate(gameObject.getRotation())); }
+    private Vector2D getA() { return getPosition().add(a.rotate(gameObject.getRotation())); }
+    private Vector2D getB() { return getPosition().add(b.rotate(gameObject.getRotation())); }
 
     @Override
     public Vector2D calculateVelocityAfterACollision(Vector2D pos, Vector2D vel) {

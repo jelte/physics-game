@@ -10,7 +10,8 @@ public class Body implements Component
 {
     private final GameObject gameObject;
     private Vector2D velocity = new Vector2D(0,0);
-    private Vector2D totalForceThisTimestep;
+    private Vector2D angularVelocity = new Vector2D(0,0);
+    private Vector2D totalForceThisTimestep = new Vector2D(0, 0);
     private final double mass;
     private final double rollingFriction;
 
@@ -26,17 +27,27 @@ public class Body implements Component
     }
 
     private void applyWeight() {
-        applyForceToParticle(GRAVITY.mult(mass));
+        applyForce(GRAVITY.mult(mass));
     }
 
-    public void applyForceToParticle(Vector2D force) {
+    public void applyForce(Vector2D force) {
         // To calculate F_net, as used in Newton's Second Law,
         // we need to accumulate all of the forces and add them up
         totalForceThisTimestep = totalForceThisTimestep.add(force);
     }
 
+    public void applyForce(Vector2D force, Vector2D contactPoint) {
+        Vector2D relativePoint = contactPoint.minus(getPosition());
+        this.angularVelocity = this.angularVelocity.add(force.scale(relativePoint.mult(0.1)));
+
+        // To calculate F_net, as used in Newton's Second Law,
+        // we need to accumulate all of the forces and add them up
+        //totalForceThisTimestep = totalForceThisTimestep.add(force.pow(2).mult(1/relativePoint.mag()));
+    }
+
     private void applyBasicRollingFriction(double amountOfRollingFriction) {
-        applyForceToParticle(getVelocity().mult(-amountOfRollingFriction*mass));
+        this.angularVelocity = this.angularVelocity.mult(0.9);
+        //applyForce(getVelocity().mult(-amountOfRollingFriction*mass));
     }
 
 
@@ -94,5 +105,16 @@ public class Body implements Component
             }
         }
         return null;
+    }
+
+    public void applyRotation(double deltaT)
+    {
+       // if (Math.abs(Math.toDegrees(angularVelocity.angle())) > 0.5) {
+            gameObject.rotate(Math.toDegrees(angularVelocity.angle()) * deltaT);
+        //}
+    }
+
+    public Vector2D getAngularVelocity() {
+        return angularVelocity;
     }
 }

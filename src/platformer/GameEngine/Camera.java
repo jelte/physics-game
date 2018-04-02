@@ -8,14 +8,14 @@ public class Camera
     private Vector2D offset;
     private Dimension viewport;
     private Dimension cameraDimension;
-    private int pixelsPerMeter;
+    private double pixelsPerMeter;
 
-    public Camera(int pixelsPerMeter)
+    public Camera(double pixelsPerMeter)
     {
-        this(new Vector2D(), pixelsPerMeter);
+        this(new Vector2D(0, 25), pixelsPerMeter);
     }
 
-    public Camera(Vector2D position, int pixelsPerMeter) {
+    public Camera(Vector2D position, double pixelsPerMeter) {
         this.position = position;
         this.pixelsPerMeter = pixelsPerMeter;
     }
@@ -29,8 +29,8 @@ public class Camera
     private void setCameraDimension()
     {
         this.cameraDimension = new Dimension(
-    (int)viewport.getWidth() / pixelsPerMeter,
-    (int)viewport.getHeight() / pixelsPerMeter
+            (int)(viewport.getWidth() / pixelsPerMeter),
+            (int)(viewport.getHeight() / pixelsPerMeter)
         );
     }
 
@@ -42,8 +42,8 @@ public class Camera
     public Dimension scale(Dimension dimension)
     {
         return new Dimension(
-            (int) dimension.getWidth() * pixelsPerMeter,
-            (int) dimension.getHeight() * pixelsPerMeter
+            (int) (dimension.getWidth() * pixelsPerMeter),
+            (int) (dimension.getHeight() * pixelsPerMeter)
         );
     }
 
