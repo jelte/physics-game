@@ -9,7 +9,7 @@ public class Vector2D implements Serializable
     /****************
      * Constructors *
      ****************/
-    public Vector2D() { this(0,0); }
+    public Vector2D() { this(0.0,0.0); }
     public Vector2D(double x, double y)
     {
         this.x = x;
@@ -28,13 +28,7 @@ public class Vector2D implements Serializable
     {
         return new Vector2D(this.x+v.x, this.y+v.y);
     }
-
-    public Vector2D minus(Vector2D v)
-    {
-        return new Vector2D(this.x-v.x, this.y-v.y);
-    }
-
-
+    public Vector2D minus(Vector2D v) { return new Vector2D(this.x-v.x, this.y-v.y); }
     // scaled addition - surprisingly useful
     // note: vector subtraction can be expressed as scaled addition with factor
     // (-1)
@@ -42,11 +36,7 @@ public class Vector2D implements Serializable
     {
         return new Vector2D(this.x + v.x * fac, this.y + v.y * fac);
     }
-
-    public Vector2D mult(double fac)
-    {
-        return new Vector2D(this.x * fac,this.y * fac);
-    }
+    public Vector2D mult(double fac) { return new Vector2D(this.x * fac,this.y * fac); }
 
     public Vector2D rotate(double angle)
     {
@@ -69,8 +59,9 @@ public class Vector2D implements Serializable
     }
 
     public Vector2D rotate90degreesAnticlockwise() {
-        return rotate(90);
+        return new Vector2D(-y,x);
     }
+   // public Vector2D rotate90degreesAnticlockwise() { return rotate(90); }
 
     /*************
      * Utilities *
@@ -104,9 +95,7 @@ public class Vector2D implements Serializable
         return v.x == x && v.y == y;
     }
 
-    public String toString() {
-        return String.format("%s(%.01f, %.01f)", this.getClass().getName(), x, y);
-    }
+    public String toString() { return String.format("%s(%.01f, %.01f)", this.getClass().getSimpleName(), x, y); }
 
     /***********
      * Getters *
@@ -114,12 +103,16 @@ public class Vector2D implements Serializable
     public double X() {
         return this.x;
     }
-
     public double Y() {
         return this.y;
     }
 
-    public Vector2D scale(Vector2D mult) {
-        return new Vector2D(x * mult.Y(), y*mult.X());
+    public static Vector2D left() {
+        return new Vector2D(-1, 0);
     }
+    public static Vector2D down() {
+        return new Vector2D(0, -1);
+    }
+    public static Vector2D up() { return new Vector2D(0, 1); }
+    public static Vector2D right() { return new Vector2D(1, 0); }
 }

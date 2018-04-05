@@ -16,8 +16,25 @@ public class PolygonCollider implements Collider
 {
     private GameObject gameObject;
     private Dimension dimension;
+    private double rotation;
     private List<Vector2D> corners;
     private List<LineCollider> colliders = new ArrayList<>();
+
+
+    public PolygonCollider(GameObject gameObject, int numberOfCorners, double radius)
+    {
+        this(gameObject, numberOfCorners, radius, 0.0);
+    }
+    public PolygonCollider(GameObject gameObject, int numberOfCorners, double radius, double rotation)
+    {
+        this.gameObject = gameObject;
+        this.corners = new ArrayList<>();
+        for ( double i = 0; i < 360; i+= 360/numberOfCorners) {
+            corners.add(Vector2D.left().mult(radius).rotate(i));
+        }
+        this.rotation = rotation;
+        initColliders();
+    }
 
     public PolygonCollider(GameObject gameObject, List<Vector2D> corners)
     {
@@ -28,35 +45,39 @@ public class PolygonCollider implements Collider
     {
         this.gameObject = gameObject;
         this.corners = corners;
+        initColliders();
+    }
+
+    private void initColliders()
+    {
         for (int i = 0; i < corners.size(); i++) {
-            colliders.add(new LineCollider(gameObject, corners.get(i), corners.get(i+1 == corners.size() ? 0 : i + 1), false));
+            colliders.add(new LineCollider(gameObject, corners.get(i), corners.get(i+1 == corners.size() ? 0 : i + 1)));
         }
     }
 
+
+    public Vector2D getUnitTangent(Vector2D contactPoint) { return getPosition().minus(contactPoint).normalise(); }
+
     @Override
-    public Collision collide(Collider other) {
-        List<Vector2D> contactPoints = new ArrayList<>();
-        for (Vector2D corner : corners) {
-            Vector2D pointOfCollision = getPosition().add(corner.rotate(gameObject.getRotation()));
-            if (other.collidesAt(pointOfCollision)) {
-                contactPoints.add(pointOfCollision);
-            }
+    public List<? extends Vector2D> getCorners() {
+        List<Vector2D> corners = new ArrayList<>();
+        for (Vector2D corner : this.corners) {
+            corners.add(getPosition().add(corner.rotate(gameObject.getRotation())));
         }
-        if (contactPoints.size() > 0) {
-            return new Collision(this, other, contactPoints);
-        }
+        return corners;
+    }
+
+    @Override
+    public Vector2D getAP(Vector2D point) {
         return null;
     }
 
     @Override
-    public boolean collidesAt(Vector2D point) {
-        for (Collider collider : colliders) {
-            if (collider.collidesAt(point)) {
-                return true;
-            }
-        }
-        return false;
+    public double getLength() {
+        return 0;
     }
+
+    public Vector2D getUnitNormal(Vector2D contanctPoint) { return getUnitTangent(contanctPoint).rotate90degreesAnticlockwise(); }
 
     @Override
     public Vector2D getPosition() {
@@ -66,11 +87,6 @@ public class PolygonCollider implements Collider
     @Override
     public boolean isNormalPointsInwards() {
         return true;
-    }
-
-    @Override
-    public Vector2D calculateVelocityAfterACollision(Vector2D pos, Vector2D vel) {
-        return vel;
     }
 
     @Override

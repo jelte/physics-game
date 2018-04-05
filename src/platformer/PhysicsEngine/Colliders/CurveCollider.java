@@ -53,46 +53,6 @@ public class CurveCollider implements Collider
     }
 
     @Override
-    public Collision collide(Collider other)
-    {
-        List<Vector2D> contactPoints = new ArrayList<>();
-        if (other instanceof CurveCollider) {
-            if (other.collidesAt(getPosition())) {
-                contactPoints.add(getPosition());
-            }
-        } else {
-            Vector2D radius = new Vector2D(radiusOfBarrier, 0).rotate(startAngle);
-            for (int i = 0; i < deltaAngle; i += 5) {
-                Vector2D startPoint = getPosition().add(radius.rotate(i));
-                if (other.collidesAt(startPoint)) {
-                    contactPoints.add(startPoint);
-                }
-            }
-        }
-        if (contactPoints.size() > 0) {
-            return new Collision(this, other, contactPoints);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean collidesAt(Vector2D point) {
-        Vector2D ap = point.minus(getPosition());
-        double ang=ap.angle(); // relies on Math.atan2 function
-        ang=ang*180/Math.PI; //convert from radians to degrees
-        ang=(ang+360)%360;	// remove any negative angles to avoid confusion
-        boolean withinAngleRange=false;
-        if (deltaAngle<0 && ((ang>=startAngle+deltaAngle && ang<=startAngle) ||(ang>=startAngle+deltaAngle+360 && ang<=startAngle+360)))
-            withinAngleRange=true;
-        if (deltaAngle>=0 && ((ang<=startAngle+deltaAngle && ang>=startAngle) ||(ang<=startAngle+deltaAngle+360 && ang>=startAngle+360)))
-            withinAngleRange=true;
-        double distToCentreOfBarrierArc = ap.mag();
-        boolean withinDistanceRange=(normalPointsInwards && distToCentreOfBarrierArc+accuracy>=this.radiusOfBarrier && distToCentreOfBarrierArc-accuracy<=this.radiusOfBarrier+(barrierDepth!=null?barrierDepth:0))
-                || (!normalPointsInwards && distToCentreOfBarrierArc-accuracy<=this.radiusOfBarrier && distToCentreOfBarrierArc+accuracy>=this.radiusOfBarrier-(barrierDepth!=null?barrierDepth:0));
-        return withinDistanceRange && withinAngleRange;
-    }
-
-    @Override
     public Vector2D getPosition() {
         return gameObject.getPosition().add(center.rotate(gameObject.getRotation()));
     }
@@ -102,18 +62,31 @@ public class CurveCollider implements Collider
         return normalPointsInwards;
     }
 
+    public Vector2D getUnitNormal(Vector2D contactPoint)
+    {
+        Vector2D normal = getPosition().minus(contactPoint).normalise();
+        if (normalPointsInwards) normal=normal.mult(-1);
+        return normal;
+    }
+
+    public Vector2D getUnitTangent(Vector2D contactPoint)
+    {
+        return getUnitNormal(contactPoint).rotate90degreesAnticlockwise().normalise();
+    }
 
     @Override
-    public Vector2D calculateVelocityAfterACollision(Vector2D pos, Vector2D vel) {
-        Vector2D normal=getPosition().minus(pos).normalise();
-        if (normalPointsInwards) normal=normal.mult(-1);
-        Vector2D tangent=normal.rotate90degreesAnticlockwise().normalise();
-        double vParallel=vel.scalarProduct(tangent);
-        double vNormal=vel.scalarProduct(normal);
-        if (vNormal < 0) // assumes normal points AWAY from barrierPoint...
-            vNormal = -vNormal;
-        Vector2D result=tangent.mult(vParallel);
-        return result.addScaled(normal, vNormal);
+    public List<? extends Vector2D> getCorners() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Vector2D getAP(Vector2D point) {
+        return point.minus(getPosition());
+    }
+
+    @Override
+    public double getLength() {
+        return radiusOfBarrier;
     }
 
     @Override

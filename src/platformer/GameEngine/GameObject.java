@@ -107,4 +107,8 @@ public class GameObject
     public void setPosition(Vector2D position) {
         this.position = position;
     }
+
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
+    }
 }

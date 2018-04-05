@@ -4,16 +4,25 @@ import platformer.GameEngine.Component;
 import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static platformer.PhysicsEngine.Physics.GRAVITY;
 
 public class Body implements Component
 {
     private final GameObject gameObject;
     private Vector2D velocity = new Vector2D(0,0);
-    private Vector2D angularVelocity = new Vector2D(0,0);
+    private double angularVelocity = 0.0;
     private Vector2D totalForceThisTimestep = new Vector2D(0, 0);
     private final double mass;
     private final double rollingFriction;
+    private double momentOfInertia = 10000000.0;
+
+    public Body(GameObject gameObject, double mass)
+    {
+        this(gameObject, mass, 0.0);
+    }
 
     public Body(GameObject gameObject, double mass, double rollingFriction)
     {
@@ -36,27 +45,9 @@ public class Body implements Component
         totalForceThisTimestep = totalForceThisTimestep.add(force);
     }
 
-    public void applyForce(Vector2D force, Vector2D contactPoint) {
-        Vector2D relativePoint = contactPoint.minus(getPosition());
-        this.angularVelocity = this.angularVelocity.add(force.scale(relativePoint.mult(0.1)));
-
-        // To calculate F_net, as used in Newton's Second Law,
-        // we need to accumulate all of the forces and add them up
-        //totalForceThisTimestep = totalForceThisTimestep.add(force.pow(2).mult(1/relativePoint.mag()));
-    }
-
-    private void applyBasicRollingFriction(double amountOfRollingFriction) {
-        this.angularVelocity = this.angularVelocity.mult(0.9);
-        //applyForce(getVelocity().mult(-amountOfRollingFriction*mass));
-    }
-
-
     public Vector2D getAcceleration() {
         // Apply forces that always exist on particle:
         applyWeight();
-
-        // this particle has been told to slow down gradually due to rolling friction
-        applyBasicRollingFriction(rollingFriction);
 
         //calculate Acceleration using Newton's second law.
         return totalForceThisTimestep.mult(1/mass);// using a=F/m from Newton's Second Law
@@ -86,35 +77,32 @@ public class Body implements Component
         return mass;
     }
 
-    public Collision collidesWith(Body body2) {
-        for (Component component : gameObject.getComponentsInChildren(Collider.class)) {
-            Collision collision = body2.collidesWith((Collider) component);
-            if (collision != null) {
-                return collision;
-            }
-        }
-        return null;
-    }
-
-    public Collision collidesWith(Collider collider)
+    public double getOrientation()
     {
-        for (Component component : gameObject.getComponentsInChildren(Collider.class)) {
-            Collision collision = ((Collider) component).collide(collider);
-            if (collision != null) {
-                return collision;
-            }
-        }
-        return null;
+        return gameObject.getRotation();
     }
 
-    public void applyRotation(double deltaT)
+    public void setOrientation(double orientation)
     {
-       // if (Math.abs(Math.toDegrees(angularVelocity.angle())) > 0.5) {
-            gameObject.rotate(Math.toDegrees(angularVelocity.angle()) * deltaT);
-        //}
+        gameObject.setRotation(orientation);
     }
 
-    public Vector2D getAngularVelocity() {
+    public double getAngularVelocity() {
         return angularVelocity;
+    }
+
+    public void setAngularVelocity(double angularVelocity) { this.angularVelocity = angularVelocity; }
+
+    public List<Vector2D> getCorners() {
+        List<Vector2D> corners = new ArrayList<>();
+        for (Component c : gameObject.getComponentsInChildren(Collider.class)) {
+            Collider collider = (Collider) c;
+            corners.addAll(collider.getCorners());
+        }
+        return corners;
+    }
+
+    public double getMomentOfInertia() {
+        return momentOfInertia;
     }
 }

@@ -6,14 +6,14 @@ import java.util.List;
 
 public class Collision
 {
+    private final Body body;
     private final Collider collider;
-    private final Collider other;
     private final List<Vector2D> points;
 
-    public Collision(Collider collider, Collider other, List<Vector2D> points)
+    public Collision(Body body, Collider collider, List<Vector2D> points)
     {
+        this.body = body;
         this.collider = collider;
-        this.other = other;
         this.points = points;
     }
 
@@ -21,11 +21,13 @@ public class Collision
         return collider;
     }
 
-    public Collider getOther() {
-        return other;
+    public Body getBody() {
+        return body;
     }
 
     public List<Vector2D> getContactPoints() {
         return points;
     }
+
+    public boolean isColliding() { return points.size() > 0; }
 }

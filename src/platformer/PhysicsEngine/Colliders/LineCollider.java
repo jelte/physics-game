@@ -1,5 +1,6 @@
 package platformer.PhysicsEngine.Colliders;
 
+import platformer.GameEngine.Behaviours.Drawables.Circle;
 import platformer.GameEngine.Behaviours.Drawables.Line;
 import platformer.GameEngine.Camera;
 import platformer.GameEngine.GameObject;
@@ -34,36 +35,6 @@ public class LineCollider implements Collider
     }
 
     @Override
-    public Collision collide(Collider other) {
-
-        List<Vector2D> contactPoints = new ArrayList<>();
-        if (other.collidesAt(getA())) {
-            contactPoints.add(getA());
-        }
-        if (other.collidesAt(getB())) {
-            contactPoints.add(getB());
-        }
-        if (contactPoints.size() > 0) {
-            return new Collision(this, other, contactPoints);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean collidesAt(Vector2D point)
-    {
-        Vector2D ap = getA().minus(point);
-        double distOnCorrectSideOfBarrierToCentre = ap.scalarProduct(getUnitNormal());
-        double distAlongBarrier = ap.scalarProduct(getUnitTangent());
-
-        // barrierLength is ||AB||, declared in constructor.
-        return distOnCorrectSideOfBarrierToCentre<=accuracy
-                && distOnCorrectSideOfBarrierToCentre>=-accuracy
-                && distAlongBarrier >= 0
-                && distAlongBarrier <= barrierLength;
-    }
-
-    @Override
     public Vector2D getPosition() {
         return gameObject.getPosition();
     }
@@ -73,25 +44,40 @@ public class LineCollider implements Collider
         return false;
     }
 
-    public Vector2D getUnitTangent() { return getA().minus(getB()).normalise(); }
-    public Vector2D getUnitNormal() { return getUnitTangent().rotate90degreesAnticlockwise(); }
-    private Vector2D getA() { return getPosition().add(a.rotate(gameObject.getRotation())); }
-    private Vector2D getB() { return getPosition().add(b.rotate(gameObject.getRotation())); }
 
     @Override
-    public Vector2D calculateVelocityAfterACollision(Vector2D pos, Vector2D vel) {
-        double vParallel=vel.scalarProduct(getUnitTangent());
-        double vNormal=vel.scalarProduct(getUnitNormal());
-        if (vNormal>0) // assumes normal points AWAY from wall...
-            vNormal=-vNormal;
-        Vector2D result=getUnitTangent().mult(vParallel);
-        return result.addScaled(getUnitNormal(), vNormal);
+    public List<? extends Vector2D> getCorners() {
+        List<Vector2D> corners = new ArrayList<>();
+        corners.add(getA());
+        corners.add(getB());
+        return corners;
     }
+
+    @Override
+    public Vector2D getAP(Vector2D point) {
+        return point.minus(getA());
+    }
+
+    @Override
+    public double getLength() {
+        return barrierLength;
+    }
+
+    public Vector2D getUnitTangent(Vector2D contactPoint) { return getB().minus(getA()).normalise(); }
+    public Vector2D getUnitNormal(Vector2D contanctPoint) { return getUnitTangent(getB()).rotate90degreesAnticlockwise(); }
+    private Vector2D getA() { return getPosition().add(a.rotate(gameObject.getRotation())); }
+    private Vector2D getB() { return getPosition().add(b.rotate(gameObject.getRotation())); }
 
     @Override
     public void draw(Graphics2D g, Camera camera) {
         if (!DEBUG) return;
 
+
         new Line(gameObject, a, b, Color.ORANGE).draw(g, camera);
+        Vector2D center = a.add(b).mult(0.5);
+        new Line(gameObject, center, center.add(getUnitNormal(b)), Color.GREEN).draw(g, camera);
+        new Line(gameObject, center, center.add(getUnitTangent(b)), Color.RED).draw(g, camera);
+        new Circle(getA(), .4, Color.BLUE).draw(g, camera);
+        new Circle(getB(), .4, Color.PINK).draw(g, camera);
     }
 }
