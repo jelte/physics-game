@@ -43,6 +43,7 @@ public class Viewport extends JComponent
     @Override
     public void paintComponent(Graphics g0)
     {
+        world.update();
         camera.setViewport(this.getSize());
 
         Graphics2D g = (Graphics2D) g0;

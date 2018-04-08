@@ -1,32 +1,33 @@
 package platformer.PhysicsEngine;
 
+import platformer.GameEngine.AbstractComponent;
 import platformer.GameEngine.Component;
 import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
+import platformer.PhysicsEngine.Colliders.PolygonCollider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static platformer.PhysicsEngine.Physics.GRAVITY;
 
-public class Body implements Component
+public class Body extends AbstractComponent implements Component
 {
-    private final GameObject gameObject;
     private Vector2D velocity = new Vector2D(0,0);
     private double angularVelocity = 0.0;
     private Vector2D totalForceThisTimestep = new Vector2D(0, 0);
     private final double mass;
     private final double rollingFriction;
-    private double momentOfInertia = 10000000.0;
+    private double momentOfInertia = 100000000.0;
+    private Double radius;
 
-    public Body(GameObject gameObject, double mass)
+    public Body(double mass)
     {
-        this(gameObject, mass, 0.0);
+        this(mass, 0.0);
     }
 
-    public Body(GameObject gameObject, double mass, double rollingFriction)
+    public Body(double mass, double rollingFriction)
     {
-        this.gameObject = gameObject;
         this.mass = mass;
         this.rollingFriction = rollingFriction;
     }
@@ -104,5 +105,35 @@ public class Body implements Component
 
     public double getMomentOfInertia() {
         return momentOfInertia;
+    }
+    public Body setMomentOfInertia(double momentOfInertia) {
+        this.momentOfInertia = momentOfInertia;
+        return this;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "("+gameObject+")";
+    }
+
+    public double getRadius() {
+        if (radius == null) {
+            for (Vector2D corner : getCorners()) {
+                double distance = getPosition().minus(corner).mag();
+                radius = radius == null || distance > radius ? distance : radius ;
+            }
+        }
+        return radius;
+    }
+
+    public List<Collider> getColliders() {
+        List<Collider> colliders = new ArrayList<>();
+        for (Component c : gameObject.getComponentsInChildren(Collider.class)) {
+            if (c instanceof PolygonCollider) {
+                colliders.addAll(((PolygonCollider) c).getColliders());
+            } else {
+                colliders.add((Collider) c);
+            }
+        }
+        return colliders;
     }
 }

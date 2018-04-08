@@ -14,4 +14,8 @@ public class Layer {
     public List<GameObject> getGameObjects() {
         return gameObjects;
     }
+
+    public boolean has(GameObject gameObject) { return gameObjects.contains(gameObject); }
+
+    public void remove(GameObject gameObject) { gameObjects.remove(gameObject); }
 }

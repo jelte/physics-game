@@ -19,4 +19,6 @@ public interface Collider extends Component, Drawable
     Vector2D getAP(Vector2D point);
 
     double getLength();
+
+    void onCollision(Collision collision);
 }

@@ -20,11 +20,12 @@ public class PhysicsTest
     public void testWorldCollisionOneCollisionPoint()
     {
         GameObject gameObject = new GameObject(new Vector2D(0,1 ));
-        Body body = new Body(gameObject, 1.0);
+        Body body = new Body( 1.0);
         gameObject.addComponent(body);
-        gameObject.addComponent(new PolygonCollider(gameObject, 4, 2));
+        gameObject.addComponent(new PolygonCollider( 4, 2));
         gameObject.rotate(45);
-        Collider collider = new LineCollider(new GameObject(), new Vector2D(-10,0 ), new Vector2D(10, 0));
+        Collider collider = new LineCollider(new Vector2D(-10,0 ), new Vector2D(10, 0));
+        collider.setGameObject(new GameObject());
 
         Physics engine = new Physics();
         List<Vector2D> contactPoints = new ArrayList<>();
@@ -38,19 +39,20 @@ public class PhysicsTest
         body.setVelocity(Vector2D.down().mult(9.8));
         engine.worldCollisionForce(body, collider, contactPoints, 1.0);
 
-        assertEquals(9.8, body.getVelocity().Y(), 0.0);
-        assertEquals(0.0, body.getAngularVelocity(), 0.0);
+        assertEquals(9.8, body.getVelocity().Y(), 0.000001);
+        assertEquals(0.0, body.getAngularVelocity(), 0.00001);
     }
 
     @Test
     public void testWorldCollisionTwoCollisionPoint()
     {
         GameObject gameObject = new GameObject(new Vector2D(0, 1));
-        Body body = new Body(gameObject, 1.0);
+        Body body = new Body( 1.0);
         gameObject.addComponent(body);
-        gameObject.addComponent(new PolygonCollider(gameObject, 4, 2));
+        gameObject.addComponent(new PolygonCollider( 4, 2));
         gameObject.rotate(45);
-        Collider collider = new LineCollider(new GameObject(), new Vector2D(-10,0 ), new Vector2D(10, 0));
+        Collider collider = new LineCollider(new Vector2D(-10,0 ), new Vector2D(10, 0));
+        collider.setGameObject(new GameObject());
 
         Physics engine = new Physics();
         List<Vector2D> contactPoints = new ArrayList<>();
@@ -65,19 +67,20 @@ public class PhysicsTest
         body.setVelocity(Vector2D.down().mult(9.8));
         engine.worldCollisionForce(body, collider, contactPoints, 1.0);
 
-        assertEquals(9.8, body.getVelocity().Y(), 0.0);
-        assertEquals(0.0, body.getAngularVelocity(), 0.0);
+        assertEquals(9.8, body.getVelocity().Y(), 0.00001);
+        assertEquals(0.0, body.getAngularVelocity(), 0.00001);
     }
 
     @Test
     public void testWorldCollisionMassLargerThan1()
     {
         GameObject gameObject = new GameObject(new Vector2D(0, 1));
-        Body body = new Body(gameObject, 10.0);
+        Body body = new Body( 10.0);
         gameObject.addComponent(body);
-        gameObject.addComponent(new PolygonCollider(gameObject, 4, 2));
+        gameObject.addComponent(new PolygonCollider( 4, 2));
         gameObject.rotate(45);
-        Collider collider = new LineCollider(new GameObject(), new Vector2D(-10,0 ), new Vector2D(10, 0));
+        Collider collider = new LineCollider(new Vector2D(-10,0 ), new Vector2D(10, 0));
+        collider.setGameObject(new GameObject());
 
         Physics engine = new Physics();
         List<Vector2D> contactPoints = new ArrayList<>();
@@ -92,7 +95,7 @@ public class PhysicsTest
         body.setVelocity(Vector2D.down().mult(9.8));
         engine.worldCollisionForce(body, collider, contactPoints, 1.0);
 
-        assertEquals(9.8, body.getVelocity().Y(), 0.0);
-        assertEquals(0.0, body.getAngularVelocity(), 0.0);
+        assertEquals(9.8, body.getVelocity().Y(), 0.00001);
+        assertEquals(0.0, body.getAngularVelocity(), 0.00001);
     }
 }

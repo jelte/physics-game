@@ -1,37 +1,43 @@
 package platformer.GameEngine.Behaviours.Drawables;
 
+import org.w3c.dom.css.Rect;
+import platformer.GameEngine.AbstractComponent;
 import platformer.GameEngine.Behaviours.Drawable;
 import platformer.GameEngine.Camera;
-import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
 
 import java.awt.*;
 
-public class Rectangle implements Drawable
+public class Rectangle extends AbstractComponent implements Drawable
 {
-    private GameObject gameObject;
+    private Vector2D center = new Vector2D();
     private Color colour = Color.lightGray;
     private Dimension dimension;
 
-    public Rectangle(GameObject gameObject, Dimension dimension, Color colour)
+    public Rectangle(Vector2D center, Dimension dimension, Color colour)
     {
-        this(gameObject, dimension);
+        this(dimension, colour);
+        this.center = center;
+    }
+
+    public Rectangle(Dimension dimension, Color colour)
+    {
+        this(dimension);
         this.colour = colour;
     }
 
-    public Rectangle(GameObject gameObject, Dimension dimension)
+    public Rectangle(Dimension dimension)
     {
-        this.gameObject = gameObject;
         this.dimension = dimension;
     }
 
     public void draw(Graphics2D g, Camera camera)
     {
         g.setColor(colour);
-        Vector2D a = gameObject.getPosition().add(new Vector2D(-dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
-        Vector2D b = gameObject.getPosition().add(new Vector2D(dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
-        Vector2D c = gameObject.getPosition().add(new Vector2D(dimension.getWidth()/2, dimension.getHeight()/2).rotate(gameObject.getRotation()));
-        Vector2D d = gameObject.getPosition().add(new Vector2D(-dimension.getWidth()/2, dimension.getHeight()/2).rotate(gameObject.getRotation()));
+        Vector2D a = gameObject.getPosition().add(center).add(new Vector2D(-dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
+        Vector2D b = gameObject.getPosition().add(center).add(new Vector2D(dimension.getWidth()/2, -dimension.getHeight()/2).rotate(gameObject.getRotation()));
+        Vector2D c = gameObject.getPosition().add(center).add(new Vector2D(dimension.getWidth()/2, dimension.getHeight()/2).rotate(gameObject.getRotation()));
+        Vector2D d = gameObject.getPosition().add(center).add(new Vector2D(-dimension.getWidth()/2, dimension.getHeight()/2).rotate(gameObject.getRotation()));
         g.fillPolygon(
             new int[] {
                 camera.convertWorldXtoScreenX(a.X()),
@@ -47,5 +53,10 @@ public class Rectangle implements Drawable
             },
             4
         );
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.colour = color;
     }
 }

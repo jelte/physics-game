@@ -1,11 +1,14 @@
 package platformer.GameEngine;
 
+import platformer.PhysicsEngine.Collider;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class GameObject
 {
+    private World world;
     private GameObject parent;
     private List<GameObject> children = new ArrayList<>();
     private List<Component> components = new ArrayList<>();
@@ -22,21 +25,31 @@ public class GameObject
 
     public void add(GameObject child)
     {
-        this.children.add(child);
+        children.add(child);
         child.setParent(this);
     }
 
-    public void addComponent(Component component)
+    public Component addComponent(Component component)
     {
-        this.components.add(component);
+        component.setGameObject(this);
+        components.add(component);
+        return component;
     }
 
-    public boolean hasComponent(Class<?> componentClass)
-    {
-        return this.getComponent(componentClass) != null;
+    public void removeComponent(Class<? extends Component> componentClass) {
+        components.remove(getComponent(componentClass));
     }
 
-    public Component getComponent(Class<?> behaviourClass)
+    public void removeComponents(Class<? extends Component> componentClass) {
+        components.removeAll(getComponents(componentClass));
+    }
+
+    public boolean hasComponent(Class<? extends Component> componentClass)
+    {
+        return getComponent(componentClass) != null;
+    }
+
+    public Component getComponent(Class<? extends Component> behaviourClass)
     {
         for (Component component : components) {
             if (behaviourClass.isInstance(component)) {
@@ -66,21 +79,21 @@ public class GameObject
         return rotation + (parent != null ? parent.getRotation() : 0);
     }
 
-    public List<Component> getComponentsInChildren(Class<?> componentClass)
+    public List<Component> getComponentsInChildren(Class<? extends Component> componentClass)
     {
         List<Component> components = new ArrayList<>();
-        if (this.hasComponent(componentClass)) {
-            components.addAll(getComponents(componentClass));
-        }
         for (GameObject child : children) {
             if (child.hasComponent(componentClass)) {
                 components.addAll(child.getComponents(componentClass));
             }
         }
+        if (this.hasComponent(componentClass)) {
+            components.addAll(getComponents(componentClass));
+        }
         return components;
     }
 
-    public Collection<? extends Component> getComponents(Class<?> componentClass)
+    public Collection<? extends Component> getComponents(Class<? extends Component> componentClass)
     {
         List<Component> components = new ArrayList<>();
         for (Component component : this.components) {
@@ -111,4 +124,16 @@ public class GameObject
     public void setRotation(double rotation) {
         this.rotation = rotation;
     }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public void destroy()
+    {
+        world.remove(this);
+    }
+
+    public void update() {}
+
 }

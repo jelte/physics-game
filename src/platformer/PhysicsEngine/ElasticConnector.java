@@ -1,8 +1,8 @@
 package platformer.PhysicsEngine;
 
+import platformer.GameEngine.AbstractComponent;
 import platformer.GameEngine.Behaviours.Drawable;
 import platformer.GameEngine.Camera;
-import platformer.GameEngine.Component;
 import platformer.GameEngine.Vector2D;
 
 import java.awt.Color;
@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 
 import static platformer.Game.DEBUG;
 
-public class ElasticConnector implements Component, Drawable
+public class ElasticConnector extends AbstractComponent implements Drawable
 {
     private final Body body1, body2;
     private final double naturalLength;
@@ -76,6 +76,11 @@ public class ElasticConnector implements Component, Drawable
             camera.convertWorldXtoScreenX(body2.getPosition().X()),
             camera.convertWorldYtoScreenY(body2.getPosition().Y())
         );
+    }
+
+    @Override
+    public void setColor(Color color) {
+
     }
 
     public boolean connects(Body b1, Body b2) {

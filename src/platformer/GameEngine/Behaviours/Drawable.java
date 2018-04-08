@@ -7,4 +7,6 @@ import java.awt.*;
 
 public interface Drawable extends Component {
     void draw(Graphics2D g, Camera camera);
+
+    void setColor(Color color);
 }

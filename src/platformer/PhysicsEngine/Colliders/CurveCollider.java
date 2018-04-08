@@ -1,23 +1,18 @@
 package platformer.PhysicsEngine.Colliders;
 
-import platformer.GameEngine.Behaviours.Drawables.Line;
 import platformer.GameEngine.Camera;
-import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
 import platformer.PhysicsEngine.Collider;
-import platformer.PhysicsEngine.Collision;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static platformer.Game.DEBUG;
 
 
-public class CurveCollider implements Collider
+public class CurveCollider extends AbstractCollider implements Collider
 {
-    private final GameObject gameObject;
     private final Vector2D center;
     private final Double barrierDepth;
     private final double deltaAngle;
@@ -26,19 +21,18 @@ public class CurveCollider implements Collider
     private final boolean normalPointsInwards;
     private final double accuracy = 0.25;
 
-    public CurveCollider(GameObject gameObject, double radiusOfBarrier, boolean normalPointsInwards)
+    public CurveCollider(double radiusOfBarrier, boolean normalPointsInwards)
     {
-        this(gameObject, -90, 360, radiusOfBarrier, normalPointsInwards);
+        this(-90, 360, radiusOfBarrier, normalPointsInwards);
     }
 
-    public CurveCollider(GameObject gameObject,  double startAngle, double deltaAngle, double radiusOfBarrier, boolean normalPointsInwards) {
-        this(gameObject, startAngle, deltaAngle, new Vector2D(), radiusOfBarrier, normalPointsInwards);
+    public CurveCollider(double startAngle, double deltaAngle, double radiusOfBarrier, boolean normalPointsInwards) {
+        this(startAngle, deltaAngle, new Vector2D(), radiusOfBarrier, normalPointsInwards);
     }
 
 
-    public CurveCollider(GameObject gameObject, double startAngle, double deltaAngle, Vector2D center, double radiusOfBarrier, boolean normalPointsInwards)
+    public CurveCollider(double startAngle, double deltaAngle, Vector2D center, double radiusOfBarrier, boolean normalPointsInwards)
     {
-        this.gameObject = gameObject;
         this.center =center;
         this.barrierDepth = 0.1;
         this.deltaAngle = deltaAngle;
@@ -48,14 +42,12 @@ public class CurveCollider implements Collider
         this.normalPointsInwards = normalPointsInwards;
     }
 
-    public CurveCollider(GameObject gameObject, Vector2D center, int radiusOfBarrier, boolean normalPointsInwards) {
-        this(gameObject, -90, 360, center, radiusOfBarrier, normalPointsInwards);
+    public CurveCollider(Vector2D center, int radiusOfBarrier, boolean normalPointsInwards) {
+        this(-90, 360, center, radiusOfBarrier, normalPointsInwards);
     }
 
     @Override
-    public Vector2D getPosition() {
-        return gameObject.getPosition().add(center.rotate(gameObject.getRotation()));
-    }
+    public Vector2D getPosition() { return gameObject.getPosition().add(center.rotate(gameObject.getRotation())); }
 
     @Override
     public boolean isNormalPointsInwards() {
@@ -76,7 +68,11 @@ public class CurveCollider implements Collider
 
     @Override
     public List<? extends Vector2D> getCorners() {
-        return new ArrayList<>();
+        List<Vector2D> corners = new ArrayList<>();
+        for (int i = 0; i < 360; i+=30) {
+            corners.add(Vector2D.down().mult(radiusOfBarrier).rotate(i));
+        }
+        return corners;
     }
 
     @Override
