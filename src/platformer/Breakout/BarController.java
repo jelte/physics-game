@@ -24,6 +24,9 @@ public class BarController extends AbstractComponent implements KeyListener
             case KeyEvent.VK_D:
                 ((Bar) gameObject).setSpeed(-40);
                 break;
+
+            case KeyEvent.VK_SPACE:
+                ((Bar) gameObject).launch();
         }
     }
 

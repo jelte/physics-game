@@ -30,6 +30,5 @@ public class Ball extends GameObject
 
         //body.setVelocity(Vector2D.down().add(Vector2D.left()).mult(25).rotate(new Random().nextInt(360)));
         body.setVelocity(Vector2D.down().mult(25));
-
     }
 }

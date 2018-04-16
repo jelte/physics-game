@@ -54,4 +54,13 @@ public class Bar extends GameObject {
     {
         setPosition(getPosition().add(Vector2D.left().mult(speed * Time.deltaTime)));
     }
+
+    public void launch() {
+        Ball ball = (Ball) findChildByType(Ball.class);
+        if (ball != null) {
+            ball.setPosition(ball.getPosition());
+            remove(ball);
+            ((Body) ball.getComponent(Body.class)).setVelocity(Vector2D.left().mult(speed).add(Vector2D.up().mult(25)));
+        }
+    }
 }

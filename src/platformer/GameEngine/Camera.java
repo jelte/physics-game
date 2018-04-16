@@ -22,6 +22,15 @@ public class Camera
 
     public void setViewport(Dimension viewport)
     {
+        if (this.viewport != null && this.viewport.getWidth() != 0.0) {
+            double ratioW = (viewport.getWidth() / this.viewport.getWidth());
+            double ratioH = (viewport.getHeight() / this.viewport.getHeight());
+            if (viewport.getWidth() > this.viewport.getWidth()) {
+                pixelsPerMeter *= ratioW < ratioH ? ratioW : ratioH;
+            } else {
+                pixelsPerMeter *= ratioW > ratioH ? ratioW : ratioH;
+            }
+        }
         this.viewport = viewport;
         this.setCameraDimension();
     }

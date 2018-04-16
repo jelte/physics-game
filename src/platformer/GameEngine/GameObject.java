@@ -1,5 +1,6 @@
 package platformer.GameEngine;
 
+import platformer.Breakout.Ball;
 import platformer.PhysicsEngine.Collider;
 
 import java.util.ArrayList;
@@ -12,21 +13,25 @@ public class GameObject
     private GameObject parent;
     private List<GameObject> children = new ArrayList<>();
     private List<Component> components = new ArrayList<>();
-    private Vector2D position;
-    private double rotation = 0.0;
+    private Transform transform;
 
     public GameObject() {
         this(new Vector2D());
     }
     public GameObject(Vector2D position)
     {
-        this.position = position;
+        this.transform = new Transform(position);
     }
 
     public void add(GameObject child)
     {
         children.add(child);
         child.setParent(this);
+    }
+
+    public void remove(GameObject child) {
+        children.remove(child);
+        child.setParent(null);
     }
 
     public Component addComponent(Component component)
@@ -59,24 +64,19 @@ public class GameObject
         return null;
     }
 
-    public Vector2D getLocalPosition()
-    {
-        return position;
-    }
-
     public Vector2D getPosition()
     {
-        return parent != null ? parent.getPosition().add(position) : position;
+        return parent != null ? parent.getPosition().add(transform.getPosition()) : transform.getPosition();
     }
 
     public double getLocalRotation()
     {
-        return this.rotation;
+        return transform.getLocalRotation();
     }
 
     public double getRotation()
     {
-        return rotation + (parent != null ? parent.getRotation() : 0);
+        return transform.getRotation() + (parent != null ? parent.getRotation() : 0);
     }
 
     public List<Component> getComponentsInChildren(Class<? extends Component> componentClass)
@@ -109,20 +109,16 @@ public class GameObject
         this.parent = parent;
     }
 
-    public GameObject getParent() {
-        return parent;
-    }
-
     public void rotate(double v) {
-        this.rotation += v;
+        transform.rotate(v);
     }
 
     public void setPosition(Vector2D position) {
-        this.position = position;
+        transform.setPosition(position);
     }
 
     public void setRotation(double rotation) {
-        this.rotation = rotation;
+        transform.setRotation(rotation);
     }
 
     public void setWorld(World world) {
@@ -135,5 +131,14 @@ public class GameObject
     }
 
     public void update() {}
+
+    public GameObject findChildByType(Class<? extends GameObject> gameObjectClass) {
+        for (GameObject gameObject : children) {
+            if (gameObjectClass.isInstance(gameObject)) {
+                return gameObject;
+            }
+        }
+        return null;
+    }
 
 }

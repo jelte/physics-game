@@ -27,10 +27,11 @@ public class Game
             }
         }
 
-        for (int i = 0; i < 1; i++) {
-            world.add(new Ball(new Vector2D(new Random().nextInt(50) -25, 48 - new Random().nextInt(8))));
-        }
-        world.add(new Bar(new Vector2D(0, 1)));
+        Bar bar = new Bar(Vector2D.up());
+        Ball ball = new Ball(Vector2D.up().mult(2));
+        bar.add(ball);
+        //world.add(ball);
+        world.add(bar);
 
     }
 
