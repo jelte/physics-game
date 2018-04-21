@@ -14,15 +14,14 @@ public class BarController extends AbstractComponent implements KeyListener
 
     @Override
     public void onKeyPressed(KeyEvent event) {
-
         switch (event.getKeyCode()) {
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:
-                ((Bar) gameObject).setSpeed(40);
+                ((Bar) gameObject).setSpeed(75);
                 break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_D:
-                ((Bar) gameObject).setSpeed(-40);
+                ((Bar) gameObject).setSpeed(-75);
                 break;
 
             case KeyEvent.VK_SPACE:

@@ -14,12 +14,9 @@ import static platformer.Game.DEBUG;
 public class CurveCollider extends AbstractCollider implements Collider
 {
     private final Vector2D center;
-    private final Double barrierDepth;
-    private final double deltaAngle;
-    private final double startAngle;
+    private final double deltaAngle, startAngle;
     private final double radiusOfBarrier, diameter;
     private final boolean normalPointsInwards;
-    private final double accuracy = 0.25;
 
     public CurveCollider(double radiusOfBarrier, boolean normalPointsInwards)
     {
@@ -33,8 +30,8 @@ public class CurveCollider extends AbstractCollider implements Collider
 
     public CurveCollider(double startAngle, double deltaAngle, Vector2D center, double radiusOfBarrier, boolean normalPointsInwards)
     {
+        super(1.0);
         this.center =center;
-        this.barrierDepth = 0.1;
         this.deltaAngle = deltaAngle;
         this.startAngle = startAngle;
         this.diameter = radiusOfBarrier;
@@ -69,7 +66,7 @@ public class CurveCollider extends AbstractCollider implements Collider
     @Override
     public List<? extends Vector2D> getCorners() {
         List<Vector2D> corners = new ArrayList<>();
-        for (int i = 0; i < 360; i+=30) {
+        for (double i = startAngle; i < startAngle+deltaAngle; i+=30) {
             corners.add(Vector2D.down().mult(radiusOfBarrier).rotate(i));
         }
         return corners;
@@ -85,16 +82,38 @@ public class CurveCollider extends AbstractCollider implements Collider
         return radiusOfBarrier;
     }
 
+    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    {
+        Vector2D ap = getAP(point);
+        double ang = (Math.toDegrees(ap.angle()) + 360) % 360;	// convert from radians to degrees, remove any negative angles to avoid confusion
+
+        double startAngle = gameObject.getRotation() + this.startAngle;
+        double finalAngle = startAngle + deltaAngle;
+
+        if (deltaAngle < 0 && !((ang >= finalAngle && ang <= startAngle) || (ang >= finalAngle+360 && ang <= startAngle+360)))
+            return false;
+
+        if (deltaAngle >= 0 && !((ang <= finalAngle && ang >= startAngle) || (ang <= finalAngle+360 && ang >= startAngle+360)))
+            return false;
+
+        double distToCentreOfBarrierArc = ap.mag();
+
+        return distToCentreOfBarrierArc + radius >= radiusOfBarrier - tolerance
+                && distToCentreOfBarrierArc - radius <= radiusOfBarrier + tolerance;
+    }
+
     @Override
     public void draw(Graphics2D g, Camera camera) {
         if (!DEBUG) return;
         int radius = camera.scale(this.diameter);
         g.setColor(Color.orange);
-        g.drawOval(
+        g.drawArc(
             camera.convertWorldXtoScreenX(getPosition().X())-radius/2,
             camera.convertWorldYtoScreenY(getPosition().Y())-radius/2,
             radius,
-            radius
+            radius,
+            (int) startAngle,
+            (int) deltaAngle
         );
     }
 }

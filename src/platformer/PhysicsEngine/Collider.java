@@ -20,5 +20,9 @@ public interface Collider extends Component, Drawable
 
     double getLength();
 
+    boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance);
     void onCollision(Collision collision);
+
+    double getCoefficientOfRestitution();
+    void setCoefficientOfRestitution(double coefficientOfRestitution);
 }

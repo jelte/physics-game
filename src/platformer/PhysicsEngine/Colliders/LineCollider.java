@@ -24,16 +24,15 @@ public class LineCollider extends AbstractCollider implements Collider
     }
     public LineCollider(Vector2D a, Vector2D b, boolean invert)
     {
+        super(1.0);
         this.a = invert ? b : a;
         this.b = invert ? a : b;
         barrierLength = this.b.minus(this.a).mag();
     }
-
     @Override
     public boolean isNormalPointsInwards() {
         return false;
     }
-
 
     @Override
     public List<? extends Vector2D> getCorners() {
@@ -57,6 +56,23 @@ public class LineCollider extends AbstractCollider implements Collider
     public Vector2D getUnitNormal(Vector2D contanctPoint) { return getUnitTangent(getB()).rotate90degreesAnticlockwise(); }
     private Vector2D getA() { return getPosition().add(a.rotate(gameObject.getRotation())); }
     private Vector2D getB() { return getPosition().add(b.rotate(gameObject.getRotation())); }
+
+    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    {
+        Vector2D n = getUnitNormal(point);
+        Vector2D ap = getAP(point);
+        double dist = ap.scalarProduct(n) - radius;
+        if (dist <= -tolerance || dist > -0.1+tolerance) {
+            return false;
+        }
+        Vector2D t = getUnitTangent(point);
+        double proj = ap.scalarProduct(t) - radius;
+        double length = getLength() + radius;
+        if (proj < 0 || proj > length) {
+            return false;
+        }
+        return velocity.scalarProduct(n) < 0;
+    }
 
     @Override
     public void draw(Graphics2D g, Camera camera) {

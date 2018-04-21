@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GameObject
 {
-    private World world;
+    protected World world;
     private GameObject parent;
     private List<GameObject> children = new ArrayList<>();
     private List<Component> components = new ArrayList<>();

@@ -23,21 +23,17 @@ public class Vector2D implements Serializable
     /**************
      * Operations *
      **************/
-
     public Vector2D add(Vector2D v)
     {
         return new Vector2D(this.x+v.x, this.y+v.y);
     }
     public Vector2D minus(Vector2D v) { return new Vector2D(this.x-v.x, this.y-v.y); }
-    // scaled addition - surprisingly useful
-    // note: vector subtraction can be expressed as scaled addition with factor
-    // (-1)
     public Vector2D addScaled(Vector2D v, double fac)
     {
         return new Vector2D(this.x + v.x * fac, this.y + v.y * fac);
     }
     public Vector2D mult(double fac) { return new Vector2D(this.x * fac,this.y * fac); }
-
+    public Vector2D scale(Vector2D other) { return new Vector2D(x * other.X(), y * other.Y()); }
     public Vector2D rotate(double angle)
     {
         double cos = Math.cos(Math.toRadians(angle));
@@ -46,22 +42,18 @@ public class Vector2D implements Serializable
         double ny = x * sin + y * cos;
         return new Vector2D(nx,ny);
     }
-
     public double scalarProduct(Vector2D v)
     {
         return x * v.x + y * v.y;
     }
-
     public Vector2D normalise()
     {
         double len = mag();
         return new Vector2D(x/len, y/len);
     }
-
     public Vector2D rotate90degreesAnticlockwise() {
         return new Vector2D(-y,x);
     }
-   // public Vector2D rotate90degreesAnticlockwise() { return rotate(90); }
 
     /*************
      * Utilities *
@@ -107,6 +99,9 @@ public class Vector2D implements Serializable
         return this.y;
     }
 
+    /************************
+     * Static instantiators *
+     ************************/
     public static Vector2D left() {
         return new Vector2D(-1, 0);
     }

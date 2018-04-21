@@ -2,7 +2,7 @@ package platformer.PhysicsEngine.Colliders;
 
 import platformer.GameEngine.Vector2D;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.Arrays;
 
 public class BoxCollider extends PolygonCollider

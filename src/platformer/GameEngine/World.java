@@ -1,5 +1,6 @@
 package platformer.GameEngine;
 
+import platformer.Game;
 import platformer.PhysicsEngine.Body;
 import platformer.PhysicsEngine.Collider;
 import platformer.PhysicsEngine.Physics;
@@ -15,12 +16,10 @@ public class World
     private final Physics physics = new Physics();
     private List<Component> keyListeners = new ArrayList<>();
 
-    private Thread thread;
     public void add(GameObject gameObject)
     {
         this.add(gameObject, 0);
     }
-
     public void add(GameObject gameObject, int layer)
     {
         if (!layers.containsKey(layer)) {
@@ -79,6 +78,9 @@ public class World
     }
 
     public void onKeyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_F5) {
+            Game.DEBUG = !Game.DEBUG;
+        }
         for (Component c : keyListeners) {
             ((KeyListener) c).onKeyPressed(e);
         }

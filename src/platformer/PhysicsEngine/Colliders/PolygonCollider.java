@@ -1,11 +1,9 @@
 package platformer.PhysicsEngine.Colliders;
 
-import platformer.GameEngine.AbstractComponent;
 import platformer.GameEngine.Camera;
 import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
 import platformer.PhysicsEngine.Collider;
-import platformer.PhysicsEngine.Collision;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ public class PolygonCollider extends AbstractCollider implements Collider
     }
     public PolygonCollider(int numberOfCorners, double radius, double rotation)
     {
+        super(1.0);
         this.corners = new ArrayList<>();
         for ( double i = 0; i < 360; i+= 360/numberOfCorners) {
             corners.add(Vector2D.left().mult(radius).rotate(i));
@@ -50,6 +49,7 @@ public class PolygonCollider extends AbstractCollider implements Collider
 
     public PolygonCollider(List<Vector2D> corners, double rotation)
     {
+        super(1.0);
         this.corners = corners;
         initColliders();
     }
@@ -81,7 +81,7 @@ public class PolygonCollider extends AbstractCollider implements Collider
 
     @Override
     public Vector2D getAP(Vector2D point) {
-        return null;
+        return getPosition().minus(point);
     }
 
     @Override
@@ -89,10 +89,19 @@ public class PolygonCollider extends AbstractCollider implements Collider
         return 0;
     }
 
-
     @Override
     public boolean isNormalPointsInwards() {
         return true;
+    }
+
+    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    {
+        for (Collider collider : colliders) {
+            if (checkCollision(point, velocity, radius, tolerance)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -30,4 +30,9 @@ public class Collision
     }
 
     public boolean isColliding() { return points.size() > 0; }
+
+    public double getCoefficientOfRestitution()
+    {
+        return collider.getCoefficientOfRestitution();
+    }
 }

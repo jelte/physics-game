@@ -12,9 +12,29 @@ import java.util.Collection;
 
 abstract class AbstractCollider extends AbstractComponent implements Collider
 {
-    @Override
+    private double coefficientOfRestitution = 1.0;
+
+    public AbstractCollider(double coefficientOfRestitution)
+    {
+        this.coefficientOfRestitution = coefficientOfRestitution;
+    }
+
     public Vector2D getPosition() {
         return gameObject.getPosition();
+    }
+
+    public double getCoefficientOfRestitution()
+    {
+        return coefficientOfRestitution;
+    }
+    public void setCoefficientOfRestitution(double coefficientOfRestitution)
+    {
+        this.coefficientOfRestitution = coefficientOfRestitution;
+    }
+
+    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    {
+        return false;
     }
 
     public void onCollision(Collision collision)
@@ -25,8 +45,6 @@ abstract class AbstractCollider extends AbstractComponent implements Collider
         }
     }
 
-    @Override
     public void setColor(Color color) {
-
     }
 }

@@ -16,6 +16,9 @@ public class Physics {
     private List<Collider> removedColliders = new ArrayList<>();
     private List<Body> removedBodies = new ArrayList<>();
 
+    private List<Collider> addedColliders = new ArrayList<>();
+    private List<Body> addedBodies = new ArrayList<>();
+
     private Thread thread;
 
     public void activate() {
@@ -37,11 +40,11 @@ public class Physics {
     }
 
     public void register(Body body) {
-        this.bodies.add(body);
+        this.addedBodies.add(body);
     }
 
     public void register(Collider collider) {
-        this.colliders.add(collider);
+        this.addedColliders.add(collider);
     }
 
     public void update() {
@@ -57,13 +60,12 @@ public class Physics {
             ec.applyTensionForceToBothParticles();
         }
 
-        double e = 1.0; // coefficient of restitution for all particle pairs
         for (int n = 0; n < bodies.size(); n++) {
             Body body = bodies.get(n);
             for (Collider collider : colliders) {
                 Collision collision = worldCollisionDetection(body, collider);
                 if (collision != null) {
-                    worldCollisionForce(body, collider, collision.getContactPoints(), e);
+                    worldCollisionForce(body, collider, collision.getContactPoints(), collider.getCoefficientOfRestitution());
                     collider.onCollision(collision);
                 }
             }
@@ -71,7 +73,7 @@ public class Physics {
                 Body body2 = bodies.get(m);
                 Collision collision = bodyCollisinoDetection(body, body2);
                 if (collision != null) {
-                    implementElasticCollision(body, body2, collision.getContactPoints(), e);
+                    implementElasticCollision(body, body2, collision.getContactPoints(), collision.getCoefficientOfRestitution());
                 }
             }
         }
@@ -111,7 +113,7 @@ public class Physics {
         for (Vector2D point : body.getCorners()) {
             Vector2D r = point.minus(body.getPosition());
             Vector2D v = body.getVelocity().add(r.mult(body.getAngularVelocity()));
-            if (checkCollision(point, v, 0, c, 0.1)) {
+            if (c.checkCollision(point, v, 0, 0.1)) {
                 contactPoints.add(point);
             }
         }
@@ -119,27 +121,6 @@ public class Physics {
             return null;
         }
         return new Collision(body, c, contactPoints);
-    }
-
-    private boolean checkCollision(Vector2D point, Vector2D velocity, double radius, Collider c, double tolerance)
-    {
-        Vector2D n = c.getUnitNormal(point);
-        Vector2D ap = c.getAP(point);
-        double dist = ap.scalarProduct(n) - radius;
-        if (dist <= -tolerance || dist > -0.1+tolerance) {
-            return false;
-        }
-        Vector2D t = c.getUnitTangent(point);
-        double proj = ap.scalarProduct(t) - radius;
-        double length = c.getLength() + radius;
-        if (proj < 0 || proj > length) {
-            return false;
-        }
-        double v = velocity.scalarProduct(n);
-        if (v >= 0) {
-            return false;
-        }
-        return true;
     }
 
     public void worldCollisionForce(Body body, Collider c, List<Vector2D> contactPoints, double e)
@@ -187,14 +168,19 @@ public class Physics {
         b2.setVelocity(b2.getVelocity().addScaled(vec1to2, j/b2.getMass()));
     }
 
-    public void unregister(Body b) { this.removedBodies.add(b); }
-    public void unregister(Collider c) { this.removedColliders.add(c); }
+    public void unregister(Body b) { removedBodies.add(b); }
+    public void unregister(Collider c) { removedColliders.add(c); }
 
     private void cleanUp()
     {
+        colliders.addAll(addedColliders);
         colliders.removeAll(removedColliders);
-        removedColliders.clear();
+        bodies.addAll(addedBodies);
         bodies.removeAll(removedBodies);
+
+        addedColliders.clear();
+        addedBodies.clear();
+        removedColliders.clear();
         removedBodies.clear();
     }
 }

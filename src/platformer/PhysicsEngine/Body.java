@@ -2,7 +2,6 @@ package platformer.PhysicsEngine;
 
 import platformer.GameEngine.AbstractComponent;
 import platformer.GameEngine.Component;
-import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
 import platformer.PhysicsEngine.Colliders.PolygonCollider;
 
@@ -17,19 +16,13 @@ public class Body extends AbstractComponent implements Component
     private double angularVelocity = 0.0;
     private Vector2D totalForceThisTimestep = new Vector2D(0, 0);
     private final double mass;
-    private final double rollingFriction;
     private double momentOfInertia = 100000000.0;
     private Double radius;
+    private Vector2D maxVelocity = new Vector2D(60, 60);
 
     public Body(double mass)
     {
-        this(mass, 0.0);
-    }
-
-    public Body(double mass, double rollingFriction)
-    {
         this.mass = mass;
-        this.rollingFriction = rollingFriction;
     }
 
     void resetTotalForce() {
@@ -64,13 +57,18 @@ public class Body extends AbstractComponent implements Component
         gameObject.setPosition(vector2D);
     }
 
-    public Vector2D getVelocity()
-    {
-        return velocity;
-    }
+    public Vector2D getVelocity() { return velocity; }
 
     public void setVelocity(Vector2D velocity)
     {
+        // Limit Y velocity
+        if (velocity.Y() > maxVelocity.Y()) {
+            velocity = new Vector2D(velocity.X(), maxVelocity.Y());
+        }
+        // Limit X velocity
+        if (velocity.X() > maxVelocity.X()) {
+            velocity = new Vector2D(maxVelocity.X(), velocity.Y());
+        }
         this.velocity = velocity;
     }
 

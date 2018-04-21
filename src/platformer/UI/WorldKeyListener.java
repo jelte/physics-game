@@ -12,7 +12,6 @@ public class WorldKeyListener extends KeyAdapter {
         this.world = world;
     }
 
-
     public void keyPressed(KeyEvent e) {
         this.world.onKeyPressed(e);
     }
