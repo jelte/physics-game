@@ -10,6 +10,7 @@ public class BrickCollisionHandler extends AbstractComponent implements Collisio
     @Override
     public void onCollision(Collision collision)
     {
+        // Reduce the health of the brick by 1 upon collision.
         ((Brick) this.gameObject).takeDamage(1);
     }
 }

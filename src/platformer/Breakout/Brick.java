@@ -7,6 +7,7 @@ import platformer.GameEngine.Behaviours.Drawables.Line;
 import platformer.GameEngine.Behaviours.Drawables.Rectangle;
 import platformer.GameEngine.GameObject;
 import platformer.GameEngine.Vector2D;
+import platformer.PhysicsEngine.Colliders.BoxCollider;
 import platformer.PhysicsEngine.Colliders.LineCollider;
 
 import java.awt.*;
@@ -36,19 +37,20 @@ public class Brick extends GameObject
 
         this.health = health;
 
-        addComponent(new LineCollider(new Vector2D(2, -1), new Vector2D(-2,-1)));
-        addComponent(new LineCollider(new Vector2D(-2, -1), new Vector2D(-2,1)));
-        addComponent(new LineCollider(new Vector2D(-2, 1), new Vector2D(2,1)));
-        addComponent(new LineCollider(new Vector2D(2, 1), new Vector2D(2,-1)));
-
+        addComponent(new BoxCollider(new Dimension(4, 2)));
+        // add collision handler
         addComponent(new BrickCollisionHandler());
 
+        // Add brick background.
         graphic = (Drawable) addComponent(new Rectangle(new Dimension(4, 2 ), colors[health]));
 
+        // Add 3d lines.
         addComponent(new Line(new Vector2D(2, -0.9), new Vector2D(-2,-0.9), new Color(0,0,0, 150)));
         addComponent(new Line(new Vector2D(1.9, -1), new Vector2D(1.9,1), new Color(0,0,0, 150)));
         addComponent(new Line(new Vector2D(2, 1), new Vector2D(-2,1), new Color(255,255,255, 150)));
         addComponent(new Line(new Vector2D(-2, -1), new Vector2D(-2,1), new Color(255,255,255, 150)));
+
+        // add bolts
         if (health > 0) {
             addComponent(new Circle(new Vector2D(1.6, -.6), 0.3, Color.darkGray));
             addComponent(new Circle(new Vector2D(1.5, -.5), 0.3, Color.lightGray));
@@ -63,11 +65,13 @@ public class Brick extends GameObject
 
     public void takeDamage(int amount)
     {
+        // reduce health.
         health -= amount;
-
         if (health <= 0) {
+            // destroy when dead.
             this.destroy();
         } else {
+            // set correct color.
             graphic.setColor(colors[health]);
         }
     }

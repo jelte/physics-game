@@ -32,9 +32,9 @@ abstract class AbstractCollider extends AbstractComponent implements Collider
         this.coefficientOfRestitution = coefficientOfRestitution;
     }
 
-    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    public Collider checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
     {
-        return false;
+        return null;
     }
 
     public void onCollision(Collision collision)

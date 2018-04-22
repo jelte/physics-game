@@ -31,6 +31,7 @@ public class BarController extends AbstractComponent implements KeyListener
 
     @Override
     public void onKeyReleased(KeyEvent event) {
+        // Reset speed to 0 when releasing the keys.
         switch (event.getKeyCode()) {
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:

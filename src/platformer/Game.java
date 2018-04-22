@@ -54,12 +54,16 @@ public class Game
 
     public static void main(String[] args) throws Exception
     {
+        // Initialize game.
         Game game = new Game();
 
+        // Setup window.
         GameWindow window = new GameWindow(new Viewport(game.world, 240), "Break-out");
 
+        // Add key listener
         window.addKeyListener(new WorldKeyListener(game.world));
 
+        // Start physics thread.
         game.world.getPhysics().activate();
     }
 }

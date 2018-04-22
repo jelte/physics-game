@@ -12,6 +12,7 @@ import static platformer.PhysicsEngine.Physics.GRAVITY;
 
 public class Body extends AbstractComponent implements Component
 {
+    private boolean hasGravity = true;
     private Vector2D velocity = new Vector2D(0,0);
     private double angularVelocity = 0.0;
     private Vector2D totalForceThisTimestep = new Vector2D(0, 0);
@@ -39,9 +40,16 @@ public class Body extends AbstractComponent implements Component
         totalForceThisTimestep = totalForceThisTimestep.add(force);
     }
 
+    public void enableGravity(boolean enabled)
+    {
+        hasGravity = enabled;
+    }
+
     public Vector2D getAcceleration() {
-        // Apply forces that always exist on particle:
-        applyWeight();
+        if (hasGravity) {
+            // Apply forces that always exist on particle:
+            applyWeight();
+        }
 
         //calculate Acceleration using Newton's second law.
         return totalForceThisTimestep.mult(1/mass);// using a=F/m from Newton's Second Law
@@ -51,14 +59,11 @@ public class Body extends AbstractComponent implements Component
     {
         return gameObject.getPosition();
     }
-
     void setPosition(Vector2D vector2D)
     {
         gameObject.setPosition(vector2D);
     }
-
     public Vector2D getVelocity() { return velocity; }
-
     public void setVelocity(Vector2D velocity)
     {
         // Limit Y velocity
@@ -71,25 +76,15 @@ public class Body extends AbstractComponent implements Component
         }
         this.velocity = velocity;
     }
-
     public double getMass() {
         return mass;
     }
-
     public double getOrientation()
     {
         return gameObject.getRotation();
     }
-
-    public void setOrientation(double orientation)
-    {
-        gameObject.setRotation(orientation);
-    }
-
-    public double getAngularVelocity() {
-        return angularVelocity;
-    }
-
+    public void setOrientation(double orientation) { gameObject.setRotation(orientation); }
+    public double getAngularVelocity() { return angularVelocity; }
     public void setAngularVelocity(double angularVelocity) { this.angularVelocity = angularVelocity; }
 
     public List<Vector2D> getCorners() {

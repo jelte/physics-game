@@ -1,5 +1,7 @@
 package platformer.GameEngine;
 
+import platformer.Breakout.Ball;
+import platformer.Breakout.Bar;
 import platformer.Game;
 import platformer.PhysicsEngine.Body;
 import platformer.PhysicsEngine.Collider;
@@ -90,5 +92,18 @@ public class World
         for (Component c : keyListeners) {
             ((KeyListener) c).onKeyReleased(e);
         }
+    }
+
+    public GameObject getGameObject(Class<? extends GameObject> objectClass) {
+        for (GameObject gameObject : getGameObjects()) {
+            if (objectClass.isInstance(gameObject)) {
+                return gameObject;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasGameObject(Class<? extends GameObject> objectClass) {
+        return getGameObject(objectClass) != null;
     }
 }

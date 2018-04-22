@@ -26,7 +26,7 @@ public class Viewport extends JComponent
     }
 
     private void startThread(final Viewport view) {
-        thread=new Thread(() -> {
+        thread = new Thread(() -> {
             // this while loop will exit any time this method is called for a second time, because
             while (thread==Thread.currentThread()) {
                 view.repaint();

@@ -19,6 +19,6 @@ public class BoxCollider extends PolygonCollider
                 new Vector2D(-dimension.getWidth() / 2, dimension.getHeight() / 2).rotate(rotation),
                 new Vector2D(dimension.getWidth() / 2, dimension.getHeight() / 2).rotate(rotation),
                 new Vector2D(dimension.getWidth() / 2, -dimension.getHeight() / 2).rotate(rotation)
-        ), rotation);
+        ), true, rotation);
     }
 }

@@ -19,5 +19,4 @@ public class WorldKeyListener extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         this.world.onKeyReleased(e);
     }
-
 }

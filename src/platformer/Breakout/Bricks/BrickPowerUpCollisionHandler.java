@@ -24,15 +24,19 @@ public class BrickPowerUpCollisionHandler extends AbstractComponent implements C
     @Override
     public void onCollision(Collision collision)
     {
+        // When colliding expand the bar by factor.
         bar.expand(factor);
+        // Remove this collision handler from the brick to avoid double buffs.
         this.gameObject.removeComponent(getClass());
     }
 
     public void setGameObject(GameObject gameObject) {
         super.setGameObject(gameObject);
         if (factor > 1) {
+            // Draw a vertical line to create a +.
             gameObject.addComponent(new Line(new Vector2D(0, -.5), new Vector2D(0, .5), new Color(0, 0, 0)));
         }
+        // Draw a horizontal line to create a -.
         gameObject.addComponent(new Line(new Vector2D(-.5, 0), new Vector2D(.5,0), new Color(0,0,0)));
     }
 }

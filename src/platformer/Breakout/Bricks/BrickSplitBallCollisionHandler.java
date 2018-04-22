@@ -26,10 +26,13 @@ public class BrickSplitBallCollisionHandler extends AbstractComponent implements
     @Override
     public void onCollision(Collision collision)
     {
+        // Create a new ball
         Ball ball = new Ball(gameObject.getPosition());
         Body body = ((Body) ball.getComponent(Body.class));
+        // set the velocity
         body.setVelocity(collision.getBody().getVelocity().scale(Vector2D.left().add(Vector2D.up())));
         world.add(ball);
+        // Remove this collision handler from the brick to avoid double buffs.
         this.gameObject.removeComponent(getClass());
     }
 

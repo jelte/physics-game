@@ -31,7 +31,7 @@ public class PolygonCollider extends AbstractCollider implements Collider
             corners.add(Vector2D.left().mult(radius).rotate(i));
     }
         this.rotation = rotation;
-        initColliders();
+        initColliders(false);
     }
 
     public void setGameObject(GameObject gameObject)
@@ -44,20 +44,25 @@ public class PolygonCollider extends AbstractCollider implements Collider
 
     public PolygonCollider(List<Vector2D> corners)
     {
-        this(corners, 0.0);
+        this(corners, false);
     }
 
-    public PolygonCollider(List<Vector2D> corners, double rotation)
+    public PolygonCollider(List<Vector2D> corners, boolean invertCollider)
+    {
+        this(corners, invertCollider, 0.0);
+    }
+
+    public PolygonCollider(List<Vector2D> corners, boolean invertCollider, double rotation)
     {
         super(1.0);
         this.corners = corners;
-        initColliders();
+        initColliders(invertCollider);
     }
 
-    private void initColliders()
+    private void initColliders(boolean invertCollider)
     {
         for (int i = 0; i < corners.size(); i++) {
-            Collider collider = new LineCollider(corners.get(i+1 == corners.size() ? 0 : i + 1), corners.get(i));
+            Collider collider = new LineCollider(corners.get(i+1 == corners.size() ? 0 : i + 1), corners.get(i), invertCollider);
             collider.setGameObject(this.gameObject);
             colliders.add(collider);
         }
@@ -91,37 +96,25 @@ public class PolygonCollider extends AbstractCollider implements Collider
 
     @Override
     public boolean isNormalPointsInwards() {
-        return true;
+        return false;
     }
 
-    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    public Collider checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
     {
         for (Collider collider : colliders) {
-            if (checkCollision(point, velocity, radius, tolerance)) {
-                return true;
+            if (collider.checkCollision(point, velocity, radius, tolerance) != null) {
+                return collider;
             }
         }
-        return false;
+        return null;
     }
 
     @Override
     public void draw(Graphics2D g, Camera camera) {
         if (!DEBUG) return;
 
-        g.setColor(Color.orange);
-
-        int[] x = new int[corners.size()+1];
-        int[] y = new int[corners.size()+1];
-
-        int i = 0;
-        for (Vector2D corner : corners) {
-            Vector2D a = gameObject.getPosition().add(corner.rotate(gameObject.getRotation()));
-            x[i] = camera.convertWorldXtoScreenX(a.X());
-            y[i++] = camera.convertWorldYtoScreenY(a.Y());
+        for (Collider collider : colliders) {
+            collider.draw(g, camera);
         }
-        Vector2D a = gameObject.getPosition().add(corners.get(0).rotate(gameObject.getRotation()));
-        x[i] = camera.convertWorldXtoScreenX(a.X());
-        y[i] = camera.convertWorldYtoScreenY(a.Y());
-        g.drawPolyline(x, y, corners.size()+1);
     }
 }

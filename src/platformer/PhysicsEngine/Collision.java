@@ -35,4 +35,12 @@ public class Collision
     {
         return collider.getCoefficientOfRestitution();
     }
+
+    public Vector2D getContactPoint() {
+        Vector2D centerContactPoint = new Vector2D();
+        for (Vector2D contactPoint : points) {
+            centerContactPoint = centerContactPoint.add(contactPoint);
+        }
+        return centerContactPoint.mult(1.0/points.size());
+    }
 }

@@ -82,7 +82,7 @@ public class CurveCollider extends AbstractCollider implements Collider
         return radiusOfBarrier;
     }
 
-    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    public Collider checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
     {
         Vector2D ap = getAP(point);
         double ang = (Math.toDegrees(ap.angle()) + 360) % 360;	// convert from radians to degrees, remove any negative angles to avoid confusion
@@ -91,15 +91,15 @@ public class CurveCollider extends AbstractCollider implements Collider
         double finalAngle = startAngle + deltaAngle;
 
         if (deltaAngle < 0 && !((ang >= finalAngle && ang <= startAngle) || (ang >= finalAngle+360 && ang <= startAngle+360)))
-            return false;
+            return null;
 
         if (deltaAngle >= 0 && !((ang <= finalAngle && ang >= startAngle) || (ang <= finalAngle+360 && ang >= startAngle+360)))
-            return false;
+            return null;
 
         double distToCentreOfBarrierArc = ap.mag();
 
         return distToCentreOfBarrierArc + radius >= radiusOfBarrier - tolerance
-                && distToCentreOfBarrierArc - radius <= radiusOfBarrier + tolerance;
+                && distToCentreOfBarrierArc - radius <= radiusOfBarrier + tolerance ? this : null;
     }
 
     @Override

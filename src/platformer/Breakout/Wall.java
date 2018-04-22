@@ -15,6 +15,7 @@ public class Wall extends GameObject
     public Wall(Vector2D position) {
         super(position);
 
+        // Draw side wall.
         for (int j = 0; j < 28; j++) {
             for (int i = -10; i < 11; i++) {
                 if (Math.abs(i) > 8 || j == 27) {
@@ -26,11 +27,14 @@ public class Wall extends GameObject
             }
         }
 
+        // Draw play background
         addComponent(new Rectangle(Vector2D.up().mult(26), new Dimension(70, 54), Color.BLACK));
+        // draw some more lines.
         addComponent(new Line(new Vector2D(-35, 53), new Vector2D(35, 53), Color.lightGray));
         addComponent(new Line(new Vector2D(-35, -1), new Vector2D(-35, 53), Color.lightGray));
         addComponent(new Line(new Vector2D(35, -1), new Vector2D(35, 53), Color.darkGray));
 
+        // add side and top colliders.
         addComponent(new LineCollider(new Vector2D(-35, 53), new Vector2D(-35, -1)));
         addComponent(new LineCollider(new Vector2D(35, -1), new Vector2D(35, 53)));
         addComponent(new LineCollider(new Vector2D(35, 53), new Vector2D(-35, 53)));

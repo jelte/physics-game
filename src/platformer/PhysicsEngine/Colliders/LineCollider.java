@@ -57,21 +57,21 @@ public class LineCollider extends AbstractCollider implements Collider
     private Vector2D getA() { return getPosition().add(a.rotate(gameObject.getRotation())); }
     private Vector2D getB() { return getPosition().add(b.rotate(gameObject.getRotation())); }
 
-    public boolean checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
+    public Collider checkCollision(Vector2D point, Vector2D velocity, double radius, double tolerance)
     {
         Vector2D n = getUnitNormal(point);
         Vector2D ap = getAP(point);
         double dist = ap.scalarProduct(n) - radius;
         if (dist <= -tolerance || dist > -0.1+tolerance) {
-            return false;
+            return null;
         }
         Vector2D t = getUnitTangent(point);
         double proj = ap.scalarProduct(t) - radius;
         double length = getLength() + radius;
         if (proj < 0 || proj > length) {
-            return false;
+            return null;
         }
-        return velocity.scalarProduct(n) < 0;
+        return velocity.scalarProduct(n) < 0 ? this : null;
     }
 
     @Override

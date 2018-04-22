@@ -1,6 +1,6 @@
 package platformer.GameEngine;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 public class Camera
 {
@@ -22,6 +22,7 @@ public class Camera
 
     public void setViewport(Dimension viewport)
     {
+        // Correct the pixels per meter.
         if (this.viewport != null && this.viewport.getWidth() != 0.0) {
             double ratioW = (viewport.getWidth() / this.viewport.getWidth());
             double ratioH = (viewport.getHeight() / this.viewport.getHeight());
@@ -31,6 +32,7 @@ public class Camera
                 pixelsPerMeter *= ratioW > ratioH ? ratioW : ratioH;
             }
         }
+        // set the viewport dimensions
         this.viewport = viewport;
         this.setCameraDimension();
     }
